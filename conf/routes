@@ -1,0 +1,24 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                                   controllers.Application.index
+
+# Employee related routes
+GET     /book/list                           controllers.BookController.list
+
+POST    /book/create                         controllers.BookController.create
+
+GET     /book/edit                           controllers.BookController.edit(bookId: Int)
+
+POST    /book/update                         controllers.BookController.update
+
+GET     /book/delete                         controllers.BookController.delete(bookId: Int)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file                       controllers.Assets.versioned(path="/public", file: Asset)
+
+# WebJars
+GET     /webjars/*file                      controllers.WebJarAssets.at(file)
+
