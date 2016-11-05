@@ -28,7 +28,7 @@ app.controller('bookCtrl', function($scope, $http, $timeout, $uibModal, BookServ
          }, function(err){
              // error
         });
-      }
+      };
 
     $scope.newBook = {};
 
