@@ -2,7 +2,7 @@
 // Main app module
 var app = angular.module('myApp', ['ui.bootstrap', 'confirmDialogBoxModule']);
 
-app.controller('bookCtrl', function($scope, $http, $timeout, $uibModal, BookService) {
+app.controller('bookCtrl', function($scope, $http, $timeout, $uibModal, $window, BookService) {
 
  $scope.books = [];
     
@@ -45,20 +45,29 @@ app.controller('bookCtrl', function($scope, $http, $timeout, $uibModal, BookServ
           });
     };
 
-     $scope.deleteBook = function(bookId) {
-           BookService.deleteBook(bookId).then(function(res){
-                       var newBookList=[];
-                       angular.forEach($scope.books,function(book){
-                                if(book.id != bookId) {
-                                        newBookList.push(book);
-                                 }
-                        });
-                        $scope.books = newBookList;
-             showAlertMessage(res.status, res.msg);
-         }, function(err){
-                 // error
-          });
-      };
+    $scope.deleteBook = function(bookId) {
+        BookService.deleteBook(bookId).then(function(res){
+                     var newBookList=[];
+                     angular.forEach($scope.books,function(book){
+                              if(book.id != bookId) {
+                                      newBookList.push(book);
+                              }
+                     });
+                     $scope.books = newBookList;
+            showAlertMessage(res.status, res.msg);
+        }, function(err){
+                console.log(err)
+        });
+    };
+
+    $scope.googleSearch = function(book) {
+        BookService.googleSearch(book).then(function(res) {
+            $window.open(res, '_blank');
+        }, function(err) {
+            console.log(err)
+        });
+    };
+
 
     getAllBook();
 
@@ -157,6 +166,24 @@ app.service("BookService", function($http, $q) {
 
           return defer.promise
       };
+
+    task.googleSearch = function(book) {
+        var defer = $q.defer();
+        $http.get('https://www.googleapis.com/books/v1/volumes?q='
+                  + "intitle:" + book.name + "inauthor:" + book.author
+                  + '&key=AIzaSyAP_-Rb-Hiw1C_fvOjzPBqLqttuJ-bspMA')
+        .success(function(res) {
+            res = 'https://books.google.fr/books?id='
+                  + res['items'][0]['id']
+                  + '&printsec=frontcover&redir_esc=y';
+            defer.resolve(res);
+        })
+        .error(function(err, status){
+            defer.reject(err);
+        });
+
+        return defer.promise
+    };
 
    return task;
 

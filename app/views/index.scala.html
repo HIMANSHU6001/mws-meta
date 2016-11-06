@@ -7,11 +7,11 @@
     <div>
         <div class="row book-header">
             <!-- Book search -->
-        <div class="col-sm-4 col-md-4 col-lg-4">
-            <input class="form-control"
-                   type="text"
-                   ng-model="searchBook" placeholder="Search book ..."/>
-        </div>
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                <input class="form-control"
+                       type="text"
+                       ng-model="searchBook" placeholder="Search book ..."/>
+            </div>
             <!-- Alert messages -->
             <div class="col-sm-4 col-md-4 col-lg-4">
                 <div ng-repeat="alert in alerts">
@@ -19,15 +19,18 @@
                 </div>
             </div>
             <!-- Add new book link -->
-        <div class="col-sm-4 col-md-4 col-lg-4">
-          <button class="btn btn-success btn-sm add-button" data-toggle="modal" data-target="#newBookModal">Add New Book</button>
-        </div>
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                <button class="btn btn-success btn-sm add-button" data-toggle="modal" data-target="#newBookModal">Add New Book</button>
+            </div>
+
         </div>
      </div>
     <hr>
 
     @views.html.book.bookList()
     @views.html.book.newBookForm()
-    @views.html.book.editBookForm()
+    @views.html.book.editBookForm
+
+    <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
 </div>
 }
