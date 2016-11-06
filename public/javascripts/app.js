@@ -5,30 +5,30 @@ var app = angular.module('myApp', ['ui.bootstrap', 'confirmDialogBoxModule']);
 app.controller('bookCtrl', function($scope, $http, $timeout, $uibModal, BookService) {
 
  $scope.books = [];
-
+    
     function getAllBook() {
-       BookService.getAll().then(function(res){
-             $scope.books = res.data;
-        }, function(err){
+       BookService.getAll().then(function(res) {
+           $scope.books = res.data;
+       }, function(err){
+          // error
+       });
+    }
+
+    $scope.selectedBook = {};
+
+    $scope.editBook = function(book){
+          $scope.selectedBook = angular.copy(book);
+    };
+
+    $scope.updateBook = function(){
+       BookService.updateBook($scope.selectedBook).then(function(res) {
+           $('.modal').modal('hide');
+           showAlertMessage(res.status, res.msg);
+           getAllBook();
+       }, function(err){
            // error
-        });
-     }
-
-      $scope.selectedBook = {};
-
-      $scope.editBook = function(book){
-            $scope.selectedBook = angular.copy(book);
-      };
-
-      $scope.updateBook = function(){
-         BookService.updateBook($scope.selectedBook).then(function(res) {
-             $('.modal').modal('hide');
-             showAlertMessage(res.status, res.msg);
-             getAllBook();
-         }, function(err){
-             // error
-        });
-      };
+      });
+    };
 
     $scope.newBook = {};
 
@@ -43,7 +43,7 @@ app.controller('bookCtrl', function($scope, $http, $timeout, $uibModal, BookServ
           }, function(err){
                 // error
           });
-    }
+    };
 
      $scope.deleteBook = function(bookId) {
            BookService.deleteBook(bookId).then(function(res){
@@ -58,7 +58,7 @@ app.controller('bookCtrl', function($scope, $http, $timeout, $uibModal, BookServ
          }, function(err){
                  // error
           });
-      }
+      };
 
     getAllBook();
 
@@ -70,7 +70,7 @@ app.controller('bookCtrl', function($scope, $http, $timeout, $uibModal, BookServ
               } else if(status == "error") {
                      $scope.alerts.push({type: "alert-danger", title: "ERROR", content: message});
               }
-    };
+    }
 
   });
 
@@ -116,7 +116,7 @@ app.service("BookService", function($http, $q) {
            });
 
          return defer.promise;
-     }
+     };
 
    task.deleteBook = function(id) {
         var defer = $q.defer();
@@ -129,7 +129,7 @@ app.service("BookService", function($http, $q) {
          });
 
          return defer.promise
-   }
+   };
 
    task.updateBook = function(data) {
       var defer = $q.defer();
@@ -142,7 +142,7 @@ app.service("BookService", function($http, $q) {
        });
 
        return defer.promise
-   }
+   };
 
    task.addBook = function(data) {
          var defer = $q.defer();
@@ -153,10 +153,10 @@ app.service("BookService", function($http, $q) {
          })
          .error(function(err, status){
                 defer.reject(err);
-         });;
+         });
 
           return defer.promise
-      }
+      };
 
    return task;
 

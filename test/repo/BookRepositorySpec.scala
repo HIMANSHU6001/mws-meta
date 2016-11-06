@@ -43,14 +43,14 @@ class BookRepositorySpec extends PlaySpecification {
         Book("My fourth book", "Orestis Melkonian", 2016)
       ))
       val knolIds = await(result)
-      knolIds === Seq(3, 4)
+      knolIds === Seq(2, 3)
     }
 
     "update a row" in new  WithApplication()  {
       val result = await(
         bookRepo.update(Book("My first book ever", "Orestis Melkonian", 2016, Some(1)))
       )
-      result === 6
+      result === 1
     }
 
     "delete a row" in new  WithApplication()  {

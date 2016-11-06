@@ -8,7 +8,9 @@
         <div class="row book-header">
             <!-- Book search -->
         <div class="col-sm-4 col-md-4 col-lg-4">
-            <input class="form-control" style="width: 70%;" type="text" ng-model="searchBook" placeholder="Search book ..."/>
+            <input class="form-control"
+                   type="text"
+                   ng-model="searchBook" placeholder="Search book ..."/>
         </div>
             <!-- Alert messages -->
             <div class="col-sm-4 col-md-4 col-lg-4">
@@ -18,7 +20,7 @@
             </div>
             <!-- Add new book link -->
         <div class="col-sm-4 col-md-4 col-lg-4">
-          <botton class="btn btn-success btn-sm add-button" style="font-weight: 600;" data-toggle="modal" data-target="#newBookModal">Add New Book</botton>
+          <button class="btn btn-success btn-sm add-button" data-toggle="modal" data-target="#newBookModal">Add New Book</button>
         </div>
         </div>
      </div>
@@ -27,6 +29,5 @@
     @views.html.book.bookList()
     @views.html.book.newBookForm()
     @views.html.book.editBookForm()
-
 </div>
 }

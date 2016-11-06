@@ -25,6 +25,7 @@ header {
 .add-button {
     float: right;
     padding: 5px 29px;
+    font-weight: 600;
 }
 
 .cursorPointer {
@@ -42,4 +43,16 @@ header {
        padding: 1 10px 50px 10px 15px;
        vertical-align: middle;
        box-shadow: 4px 4px 4px #B3AFAF;
+}
+
+.form-control {
+    width: 70%;
+}
+
+.edit-button {
+    color: #128d36;
+}
+
+.delete-button {
+    color: #d85010;
 }

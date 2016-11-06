@@ -36,12 +36,12 @@ class BookControllerSpec extends PlaySpecification with Mockito with Results {
       resultAsString === """{"status":"success","data":"{}","msg":"Book has been updated successfully."}"""
     }
 
-/*    "edit a book" in {
-      val book = Book("sky", "sky@knoldus.com", "knoldus", "Senior Consultant",Some(1))
+    "edit a book" in {
+      val book = Book("First book", "Orestis Melkonian", 2016, Some(1))
       mockedRepo.getById(1) returns Future.successful(Some(book))
       val result = bookController.edit(1).apply(FakeRequest())
       val resultAsString = contentAsString(result)
-      resultAsString === """{"status":"success","data":{"name":"sky","email":"sky@knoldus.com","companyName":"knoldus","position":"Senior Consultant","id":1},"msg":"Getting Book successfully"}"""
+      resultAsString === """{"status":"success","data":{"name":"First book","author":"Orestis Melkonian","year":2016,"id":1},"msg":"Getting Book successfully"}"""
     }
 
     "delete a book" in {
@@ -51,12 +51,12 @@ class BookControllerSpec extends PlaySpecification with Mockito with Results {
       resultAsString === """{"status":"success","data":"{}","msg":"Book has been deleted successfully."}"""
     }
     "get all list" in {
-      val book = Book("sky", "sky@knoldus.com", "knoldus", "Senior Consultant",Some(1))
+      val book = Book("First book", "Orestis Melkonian", 2016, Some(1))
       mockedRepo.getAll() returns Future.successful(List(book))
       val result = bookController.list().apply(FakeRequest())
       val resultAsString = contentAsString(result)
-      resultAsString === """{"status":"success","data":[{"name":"sky","email":"sky@knoldus.com","companyName":"knoldus","position":"Senior Consultant","id":1}],"msg":"Getting Book list successfully"}"""
-    }*/
+      resultAsString === """{"status":"success","data":[{"name":"First book","author":"Orestis Melkonian","year":2016,"id":1}],"msg":"Getting Book list successfully"}"""
+    }
 
   }
 

@@ -1,4 +1,4 @@
-name := """activator-play-slick-angularjs"""
+name := """MWS-Books"""
 
 version := "1.0"
 
@@ -7,8 +7,10 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
+  // Play
   "com.typesafe.play" %% "play-slick" % "2.0.0",
   "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0",
+  // DB
   "com.h2database" % "h2" % "1.4.187",
   "org.postgresql" % "postgresql" % "9.4-1206-jdbc4",
   // WebJars (i.e. client-side) dependencies
@@ -17,6 +19,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "bootstrap" % "3.3.6" exclude("org.webjars", "jquery"),
   "org.webjars" % "angularjs" % "1.5.5" exclude("org.webjars", "jquery"),
   "org.webjars" % "angular-ui-bootstrap" % "1.3.2" exclude("org.webjars", "jquery"),
+  // Testing
   specs2 % Test
 )
 
