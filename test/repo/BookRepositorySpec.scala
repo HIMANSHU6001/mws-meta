@@ -23,13 +23,13 @@ class BookRepositorySpec extends PlaySpecification {
     "get all rows" in new WithApplication()  {
       val result = await(bookRepo.getAll())
       result.length === 1
-      result.head.name === "My first book"
+      result.head.title === "My first book"
     }
 
     "get single rows" in new WithApplication() {
       val result = await(bookRepo.getById(1))
       result.isDefined === true
-      result.get.name === "My first book"
+      result.get.title === "My first book"
     }
 
     "insert a row" in new WithApplication()  {

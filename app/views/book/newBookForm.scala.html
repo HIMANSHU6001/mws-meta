@@ -1,6 +1,6 @@
 
 <!-- Book Form Modal -->
-<form id="newBookForm" role="form" ng-submit="addBook()">
+<form id="newBookForm" role="form" ng-submit="ctrl.addBook()">
     <div class="modal fade" id="newBookModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -11,18 +11,18 @@
                 <div class="modal-body">
 
                     <div class="form-group">
-                        <label for="bookName">Name</label>
-                        <input type="text" class="form-control" id="bookName" name="name" ng-model="newBook.name" placeholder="Name" required>
+                        <label for="bookTitle">Title</label>
+                        <input type="text" class="form-control" id="bookTitle" name="title" ng-model="ctrl.newBook.title" placeholder="Title" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="bookAuthor">Author address</label>
-                        <input type="text" class="form-control" id="bookAuthor" name="author" ng-model="newBook.author" placeholder="Author" required>
+                        <label for="bookAuthor">Author</label>
+                        <input type="text" class="form-control" id="bookAuthor" name="author" ng-model="ctrl.newBook.author" placeholder="Author" required>
                     </div>
 
                     <div class="form-group">
                         <label for="bookYear">Year</label>
-                        <input type="number" class="form-control" id="bookYear"  name="year" ng-model="newBook.year" placeholder="Year" required>
+                        <input type="number" class="form-control" id="bookYear"  name="year" ng-model="ctrl.newBook.year" placeholder="Year" required>
                     </div>
 
                 </div>

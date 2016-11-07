@@ -1,12 +1,12 @@
 # --- !Ups
 CREATE TABLE "book" (
   "id" SERIAL PRIMARY KEY,
-  "name" varchar(200),
+  "title" varchar(200),
   "author" varchar(200),
   "year" INTEGER
 );
 
-INSERT INTO "book" values (1, 'My first book', 'Orestis Melkonian', 2016);
+INSERT INTO "book" values (1, 'The Rebel', 'Albert Camus', 1951);
 
 # --- !Downs
 DROP TABLE "book";

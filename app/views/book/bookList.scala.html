@@ -1,30 +1,30 @@
 <table class="table table-hover">
     <thead>
     <tr>
-        <th>Name</th>
+        <th>Title</th>
         <th>Author</th>
         <th>Year</th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="book in books | filter: searchBook">
-        <td>{{book.name}}</td>
+    <tr ng-repeat="book in ctrl.books | filter: searchBook">
+        <td>{{book.title}}</td>
         <td>{{book.author}}</td>
         <td>{{book.year}}</td>
         <td>
-            <i title="Edit" data-toggle="modal" data-target="#editBookModal" class="glyphicon glyphicon-edit cursorPointer edit-button" ng-click="editBook(book)">
+            <i title="Edit" data-toggle="modal" data-target="#editBookModal" class="glyphicon glyphicon-edit cursorPointer edit-button" ng-click="ctrl.editBook(book)">
             </i>
         </td>
         <td>
-            <i title="Delete" class="glyphicon glyphicon-trash cursorPointer delete-button" ng-confirm-message="Are you sure want to delete?" ng-confirm-click="deleteBook(book.id)">
+            <i title="Delete" class="glyphicon glyphicon-trash cursorPointer delete-button" ng-confirm-message="Are you sure want to delete?" ng-confirm-click="ctrl.deleteBook(book.id)">
             </i>
         </td>
         <td>
-            <i title="Google Search" class="glyphicon glyphicon-book cursorPointer google-button" ng-click="googleSearch(book)">
+            <i title="Google Search" class="glyphicon glyphicon-book cursorPointer google-button" ng-click="ctrl.googleSearch(book)">
             </i>
         </td>
     </tr>
     </tbody>
 </table>
 
-<p>Showing <strong>{{ (books | filter:searchBook).length }}</strong> of <strong>{{books.length}}</strong> entries</p>
+<p>Showing <strong>{{ (ctrl.books | filter: searchBook).length }}</strong> of <strong>{{ ctrl.books.length }}</strong> entries</p>

@@ -27,7 +27,6 @@ class InitialData @Inject() (bookRepo: BookRepository) {
 
 object Data {
   val employees = List(
-    Book("My first book", "Orestis Melkonian", 2016),
-    Book("My second book", "Orestis Melkonian", 2016)
+    Book("The Rebel", "Albert Camus", 1951)
   )
 }

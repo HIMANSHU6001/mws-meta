@@ -2,7 +2,7 @@
 
 @main("Play Angular App")(webJarAssets) {
 
-<div ng-controller="bookCtrl">
+<div ng-controller="BookCtrl as ctrl">
 
     <div>
         <div class="row book-header">
@@ -29,7 +29,7 @@
 
     @views.html.book.bookList()
     @views.html.book.newBookForm()
-    @views.html.book.editBookForm
+    @views.html.book.editBookForm()
 
     <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
 </div>

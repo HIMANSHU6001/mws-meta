@@ -1,1 +1,0 @@
-alert i for i in [1..10] when i % 3

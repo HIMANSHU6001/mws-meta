@@ -34,11 +34,11 @@ private[repo] trait BookTable  { self: HasDatabaseConfigProvider[JdbcProfile] =>
 
   class BookTable(tag: Tag) extends Table[Book](tag, "book") {
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
-    val name: Rep[String] = column[String]("name", O.SqlType("VARCHAR(200)"))
+    val title: Rep[String] = column[String]("title", O.SqlType("VARCHAR(200)"))
     val author: Rep[String] = column[String]("author", O.SqlType("VARCHAR(200)"))
     val year: Rep[Int] = column[Int]("year")
-    def nameUnique = index("name_unique", name, unique = true)
-    def * = (name, author, year, id.?) <> (Book.tupled, Book.unapply)
+    def titleUnique = index("title_unique", title, unique = true)
+    def * = (title, author, year, id.?) <> (Book.tupled, Book.unapply)
   }
 
   lazy protected val books = TableQuery[BookTable]
