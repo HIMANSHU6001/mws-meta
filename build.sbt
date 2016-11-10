@@ -13,6 +13,10 @@ libraryDependencies ++= Seq(
   // DB
   "com.h2database" % "h2" % "1.4.187",
   "org.postgresql" % "postgresql" % "9.4-1206-jdbc4",
+  // Authentication
+  "jp.t2v" %% "play2-auth"        % "0.14.2",
+  "jp.t2v" %% "play2-auth-social" % "0.14.2",
+  play.sbt.Play.autoImport.cache,
   // WebJars (i.e. client-side) dependencies
   "org.webjars" %% "webjars-play" % "2.5.0",
   "org.webjars" % "jquery" % "1.11.3",
@@ -23,6 +27,10 @@ libraryDependencies ++= Seq(
   specs2 % Test
 )
 
-resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+resolvers ++= Seq(
+  "typesafe" at "http://repo.typesafe.com/typesafe/releases/",
+  "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
+  "Atlassian Releases" at "https://maven.atlassian.com/public/"
+)
 
 fork in run := false

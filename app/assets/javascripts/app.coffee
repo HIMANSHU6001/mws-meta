@@ -71,7 +71,6 @@ class BookCtrl
     @alerts = []
     @selectedBook = {}
     @newBook = {}
-    @getAllBooks()
 
   showAlertMessage: (status, message) ->
     switch status

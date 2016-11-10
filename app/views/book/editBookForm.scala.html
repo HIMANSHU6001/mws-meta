@@ -1,5 +1,4 @@
-@(param: Any)
-
+@(account: Account)
 <!-- Book Edit Form Modal -->
 <form name="editBookForm" ng-submit="ctrl.updateBook()">
     <div class="modal fade" id="editBookModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
@@ -23,6 +22,11 @@
                     <div class="form-group">
                         <label for="year">Year</label>
                         <input type="text" class="form-control" ng-model="ctrl.selectedBook.year" value="{{ctrl.selectedBook.year}}" id="year" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bookAccountId">Account</label>
+                        <input type="text" class="form-control" id="bookAccountId"  name="accountId" ng-model="ctrl.selectedBook.accountId" value="{{account.name}}" readonly>
                     </div>
 
                 </div>

@@ -1,6 +1,6 @@
-@(webJarAssets: WebJarAssets)
+@(account: Account)(implicit webJarAssets: WebJarAssets)
 
-@main("Play Angular App")(webJarAssets) {
+@main(s"${account.name}'s Database")(webJarAssets) {
 
 <div ng-controller="BookCtrl as ctrl">
 
@@ -27,9 +27,9 @@
      </div>
     <hr>
 
-    @views.html.book.bookList()
-    @views.html.book.newBookForm()
-    @views.html.book.editBookForm()
+    @views.html.book.bookList(account)
+    @views.html.book.newBookForm(account)
+    @views.html.book.editBookForm(account)
 
     <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
 </div>

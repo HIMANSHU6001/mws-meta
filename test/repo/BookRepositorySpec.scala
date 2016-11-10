@@ -21,26 +21,26 @@ class BookRepositorySpec extends PlaySpecification {
 
 
     "get all rows" in new WithApplication()  {
-      val result = await(bookRepo.getAll())
+      val result = await(bookRepo.getAll)
       result.length === 1
-      result.head.title === "My first book"
+      result.head.title === "The Rebel"
     }
 
     "get single rows" in new WithApplication() {
       val result = await(bookRepo.getById(1))
       result.isDefined === true
-      result.get.title === "My first book"
+      result.get.title === "The Rebel"
     }
 
     "insert a row" in new WithApplication()  {
-      val knolId = await(bookRepo.insert(Book("My second book", "Orestis Melkonian", 2016)))
+      val knolId = await(bookRepo.insert(Book("My second book", "Orestis Melkonian", 2016, "orestis")))
       knolId === 2
     }
 
     "insert multiple rows" in new  WithApplication()  {
       val result = bookRepo.insertAll(List(
-        Book("My third book", "Orestis Melkonian", 2016),
-        Book("My fourth book", "Orestis Melkonian", 2016)
+        Book("My third book", "Orestis Melkonian", 2016, "orestis"),
+        Book("My fourth book", "Orestis Melkonian", 2016, "orestis")
       ))
       val knolIds = await(result)
       knolIds === Seq(2, 3)
@@ -48,7 +48,7 @@ class BookRepositorySpec extends PlaySpecification {
 
     "update a row" in new  WithApplication()  {
       val result = await(
-        bookRepo.update(Book("My first book ever", "Orestis Melkonian", 2016, Some(1)))
+        bookRepo.update(Book("My first book ever", "Orestis Melkonian", 2016, "orestis", Some(1)))
       )
       result === 1
     }

@@ -8,21 +8,31 @@ import slick.driver.JdbcProfile
 import scala.concurrent.Future
 
 @Singleton()
-class BookRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider) extends BookTable with HasDatabaseConfigProvider[JdbcProfile] {
+class BookRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
+  extends BookTable with HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
-  def insert(book: Book): Future[Int] = db.run { booksInc += book }
+  def insert(book: Book): Future[Int] =
+    db.run { booksInc += book }
 
-  def insertAll(books: List[Book]): Future[Seq[Int]] = db.run { booksInc ++= books }
+  def insertAll(books: List[Book]): Future[Seq[Int]] =
+    db.run { booksInc ++= books }
 
-  def update(book: Book): Future[Int] = db.run { books.filter(_.id === book.id).update(book) }
+  def update(book: Book): Future[Int] =
+    db.run { books.filter(_.id === book.id).update(book) }
 
-  def delete(id: Int): Future[Int] = db.run { books.filter(_.id === id).delete }
+  def delete(id: Int): Future[Int] =
+    db.run { books.filter(_.id === id).delete }
 
-  def getAll(): Future[List[Book]] = db.run { books.to[List].result }
+  def getAll: Future[List[Book]] =
+    db.run { books.to[List].result }
 
-  def getById(empId: Int): Future[Option[Book]] = db.run { books.filter(_.id === empId).result.headOption }
+  def getAllByUser(userName: String): Future[List[Book]] =
+    db.run {books.filter(_.accountId === userName).to[List].result }
+
+  def getById(bookId: Int): Future[Option[Book]] =
+    db.run { books.filter(_.id === bookId).result.headOption }
 
   def ddl = books.schema
 
@@ -37,8 +47,11 @@ private[repo] trait BookTable  { self: HasDatabaseConfigProvider[JdbcProfile] =>
     val title: Rep[String] = column[String]("title", O.SqlType("VARCHAR(200)"))
     val author: Rep[String] = column[String]("author", O.SqlType("VARCHAR(200)"))
     val year: Rep[Int] = column[Int]("year")
+    val accountId: Rep[String] = column[String]("accountId")
+
     def titleUnique = index("title_unique", title, unique = true)
-    def * = (title, author, year, id.?) <> (Book.tupled, Book.unapply)
+
+    def * = (title, author, year, accountId, id.?) <> (Book.tupled, Book.unapply)
   }
 
   lazy protected val books = TableQuery[BookTable]
