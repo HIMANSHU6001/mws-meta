@@ -3,31 +3,27 @@
 # ~~~~
 
 # Home page
-GET     /                      controllers.Application.index
+GET     /                      main.Application.index
 
 # Book-related routes
-GET     /book/list             controllers.BookController.list
-
-POST    /book/create           controllers.BookController.create
-
-GET     /book/edit             controllers.BookController.edit(bookId: Int)
-
-POST    /book/update           controllers.BookController.update
-
-GET     /book/delete           controllers.BookController.delete(bookId: Int)
-
-# Account-related routes
-GET     /account/list          controllers.AccountController.list()
-POST	/account/signUp 	   controllers.AccountController.signUp()
+GET     /books                 books.BookController.index
+GET     /book/list             books.BookController.list
+POST    /book/create           books.BookController.create
+GET     /book/edit             books.BookController.edit(title: String)
+POST    /book/update           books.BookController.update
+GET     /book/delete           books.BookController.delete(title: String)
+POST    /book/infoSearch       books.BookController.infoSearch
 
 # Authentication
-GET		/login				   controllers.Authentication.prepareLogin()
-POST	/login				   controllers.Authentication.login()
-GET		/logout				   controllers.Authentication.logout()
+GET		/login				   accounts.Authentication.prepareLogin()
+POST	/login				   accounts.Authentication.login()
+GET		/logout				   accounts.Authentication.logout()
+POST	/signUp 	           accounts.Authentication.signUp()
+GET     /account/list          accounts.Authentication.list()
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file         controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file          controllers.Assets.at(path="/public", file)
 
 # WebJars
-GET     /webjars/*file        controllers.WebJarAssets.at(file)
+GET     /webjars/*file         controllers.WebJarAssets.at(file)
 

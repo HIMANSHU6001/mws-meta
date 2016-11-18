@@ -1,3 +1,4 @@
+@import accounts.model.Account
 @(account: Account)
 <!-- Book Edit Form Modal -->
 <form name="editBookForm" ng-submit="ctrl.updateBook()">
@@ -16,17 +17,12 @@
 
                     <div class="form-group">
                         <label for="author">Author</label>
-                        <input type="text" class="form-control" ng-model="ctrl.selectedBook.author" id="author" required value="{{ctrl.selectedBook.author}}">
+                        <input type="text" class="form-control" ng-model="ctrl.selectedBook.author" id="author" value="{{ctrl.selectedBook.author}}" required>
                     </div>
 
                     <div class="form-group">
                         <label for="year">Year</label>
-                        <input type="text" class="form-control" ng-model="ctrl.selectedBook.year" value="{{ctrl.selectedBook.year}}" id="year" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bookAccountId">Account</label>
-                        <input type="text" class="form-control" id="bookAccountId"  name="accountId" ng-model="ctrl.selectedBook.accountId" value="{{account.name}}" readonly>
+                        <input type="number" class="form-control" ng-model="ctrl.selectedBook.year" value="{{ctrl.selectedBook.year}}" id="year" required>
                     </div>
 
                 </div>

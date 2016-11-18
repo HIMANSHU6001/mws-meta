@@ -1,31 +1,32 @@
-@*
- * This template is called from the `index` template. This template
- * handles the rendering of the page header and body tags. It takes
- * two arguments, a `String` for the title of the page and an `Html`
- * object to insert into the body of the page.
- *@
+@import accounts.{routes => accountsRoutes}
+@import main.{routes => mainRoutes}
 
-@(title: String)(webJarAssets: WebJarAssets)(content: Html)
+@(title: String, fav: String = "favicon")(webJarAssets: WebJarAssets)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en" ng-app="myApp">
     <head>
         <title>@title</title>
 
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.ico")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at(s"images/$fav.ico")">
 
         <!-- Bootstrap 3.3.6 -->
         <link rel='stylesheet' href='@routes.WebJarAssets.at(webJarAssets.locate("css/bootstrap.min.css"))'>
 
         <!-- Custom CSS Links -->
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
 
     </head>
     <body>
 
     <header>
-        <span class="glyphicon glyphicon-menu-hamburger header-icon" aria-hidden="true"></span>
-        <h3 class="page-header" style="">BOOK DATABASE</h3>
+        <a href="@mainRoutes.Application.index()">
+            <span class="glyphicon glyphicon-menu-hamburger header-icon" aria-hidden="true"></span>
+        </a>
+        <h3 class="page-header" style="">@title</h3>
+        <a href="@accountsRoutes.Authentication.logout()">
+            <span class="glyphicon glyphicon-log-out logout-icon" aria-hidden="true"></span>
+        </a>
     </header>
 
         <div class="container-fluid body-content">
@@ -40,8 +41,9 @@
         <script type="text/javascript" src='@routes.WebJarAssets.at(webJarAssets.locate("angular-animate.min.js"))'></script>
 
          <!-- #Custom Javascripts Links -->
-        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/app.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/books.js")"></script>
         <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
+        <script type="text/javascript" src="http://s.codepen.io/assets/libs/modernizr.js"></script>
         
     </body>
 </html>

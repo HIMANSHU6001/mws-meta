@@ -17,9 +17,9 @@ class BookService
     defer.promise
 
 
-  deleteBook: (id) ->
+  deleteBook: (title) ->
     defer = @$q.defer()
-    @$http.get "/book/delete?bookId=#{ id }"
+    @$http.get "/book/delete?title=#{ title }"
     .success (res) =>
       @taskList = res
       defer.resolve res
@@ -47,19 +47,6 @@ class BookService
 
     defer.promise
 
-  googleSearch: (book) ->
-    defer = @$q.defer()
-    @$http.get "https://www.googleapis.com/books/v1/volumes?q=\
-               intitle: #{ book.title } inauthor: #{ book.author }\
-               &key=AIzaSyAP_-Rb-Hiw1C_fvOjzPBqLqttuJ-bspMA"
-    .success (res) =>
-      res = "https://books.google.fr/books\
-            ?id=#{ res['items'][0]['id'] }\
-            &printsec=frontcover&redir_esc=y"
-      defer.resolve res
-    .error (err, status) => defer.reject err
-
-    defer.promise
 
 ###
   Controller
@@ -71,6 +58,7 @@ class BookCtrl
     @alerts = []
     @selectedBook = {}
     @newBook = {}
+    @getAllBooks()
 
   showAlertMessage: (status, message) ->
     switch status
@@ -88,7 +76,7 @@ class BookCtrl
   getAllBooks: ->
     @BookService.getAll().then(
       (res) => @books = res.data
-    , (err) =>
+    , (err) => @showAlertMessage "error", err
     )
 
   editBook: (book) ->
@@ -98,41 +86,35 @@ class BookCtrl
     @BookService.updateBook(@selectedBook).then(
       (res) =>
         $('.modal').modal 'hide'
-        @showAlertMessage res.status, res.msg
         @getAllBooks()
-    , (err) =>
+        @showAlertMessage res.status, res.msg
+    , (err) => @showAlertMessage "error", err
     )
 
   addBook: ->
     @BookService.addBook(@newBook).then(
       (res) =>
         $('.modal').modal 'hide'
-        console.log(res.data)
-        newId = res.data.id
-        @newBook["id"] = newId
-        @books.push @newBook
-        @newBook = {}
+        @getAllBooks()
         @showAlertMessage res.status, res.msg
-    , (err) =>
+    , (err) => @showAlertMessage "error", err
     )
 
-  deleteBook: (bookId) ->
-    @BookService.deleteBook(bookId).then(
+  deleteBook: (title) ->
+    @BookService.deleteBook(title).then(
       (res) =>
         newBookList=[]
         angular.forEach @books, (book) =>
-          newBookList.push(book) if book.id != bookId
-
+          newBookList.push(book) if book.title != title
         @books = newBookList
         @showAlertMessage res.status, res.msg
-    , (err) =>
+    , (err) => @showAlertMessage "error", err
     )
 
-  googleSearch: (book) ->
-    @BookService.googleSearch(book).then(
-      (res) => @$window.open res, '_blank'
-    , (err) =>
-    )
+  infoSearch: (book) ->
+    @$http.post '/book/infoSearch', book
+    .success (res) => @$window.open res.data, '_blank'
+    .error (err, status) =>
 
 ###
   Module (main)

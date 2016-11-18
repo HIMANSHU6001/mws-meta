@@ -1,5 +1,6 @@
 package repo
 
+import accounts.model.{Account, AccountRepository}
 import play.api.Application
 import play.api.test.{PlaySpecification, WithApplication}
 
@@ -8,8 +9,6 @@ import scala.concurrent.duration.Duration
 
 
 class AccountRepositorySpec extends PlaySpecification {
-
-  import models._
 
   "Account repository" should {
 

@@ -1,3 +1,4 @@
+@import accounts.model.Account
 @(account: Account)
 <table class="table table-hover">
     <thead>
@@ -17,11 +18,11 @@
             </i>
         </td>
         <td>
-            <i title="Delete" class="glyphicon glyphicon-trash cursorPointer delete-button" ng-confirm-message="Are you sure want to delete?" ng-confirm-click="ctrl.deleteBook(book.id)">
+            <i title="Delete" class="glyphicon glyphicon-trash cursorPointer delete-button" ng-confirm-message="Are you sure want to delete?" ng-confirm-click="ctrl.deleteBook(book.title)">
             </i>
         </td>
         <td>
-            <i title="Google Search" class="glyphicon glyphicon-book cursorPointer google-button" ng-click="ctrl.googleSearch(book)">
+            <i title="Google Search" class="glyphicon glyphicon-book cursorPointer google-button" ng-click="ctrl.infoSearch(book)">
             </i>
         </td>
     </tr>

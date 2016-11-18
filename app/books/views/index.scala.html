@@ -1,6 +1,10 @@
+@import accounts.model.Account
+@import books.views.html
+@import main.views.{html => mainHtml}
+
 @(account: Account)(implicit webJarAssets: WebJarAssets)
 
-@main(s"${account.name}'s Database")(webJarAssets) {
+@mainHtml._template(s"${account.name}'s book database", fav = "books")(webJarAssets) {
 
 <div ng-controller="BookCtrl as ctrl">
 
@@ -14,7 +18,7 @@
             </div>
             <!-- Alert messages -->
             <div class="col-sm-4 col-md-4 col-lg-4">
-                <div ng-repeat="alert in alerts">
+                <div ng-repeat="alert in ctrl.alerts">
                 <notification ng-model="alert"></notification>
                 </div>
             </div>
@@ -27,9 +31,9 @@
      </div>
     <hr>
 
-    @views.html.book.bookList(account)
-    @views.html.book.newBookForm(account)
-    @views.html.book.editBookForm(account)
+    @html.bookList(account)
+    @html.newBookForm(account)
+    @html.editBookForm(account)
 
     <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
 </div>

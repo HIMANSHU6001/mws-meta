@@ -1,10 +1,16 @@
 package utils
 
+import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.Json._
+
+
 object Constants {
 
-  val INVALID_REQUEST_JSON = "Invalid  json format"
+  def response(status: String)(data: JsValue, message: String): JsObject =
+    obj("status" -> status, "data" -> data, "msg" -> message)
 
-  val ERROR = "error"
-  val SUCCESS = "success"
+  def successResponse(data: JsValue, message: String) = response("success")(data, message)
+
+  def failResponse(data: JsValue, message: String) = response("error")(data, message)
 
 }

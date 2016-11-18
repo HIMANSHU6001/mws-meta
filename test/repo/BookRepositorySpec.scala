@@ -1,8 +1,8 @@
 package repo
 
 
-import org.specs2.execute.{AsResult, Result}
-import org.specs2.specification.{AroundEach, BeforeEach}
+import books.Book
+import books.model.{Book, BookRepository}
 import play.api.Application
 import play.api.test.{PlaySpecification, WithApplication}
 
@@ -12,8 +12,6 @@ import scala.concurrent.Future
 
 
 class BookRepositorySpec extends PlaySpecification {
-
-  import models._
 
   "Book repository" should {
 
@@ -27,34 +25,33 @@ class BookRepositorySpec extends PlaySpecification {
     }
 
     "get single rows" in new WithApplication() {
-      val result = await(bookRepo.getById(1))
+      val result = await(bookRepo.getByTitle("The Rebel"))
       result.isDefined === true
       result.get.title === "The Rebel"
     }
 
-    "insert a row" in new WithApplication()  {
-      val knolId = await(bookRepo.insert(Book("My second book", "Orestis Melkonian", 2016, "orestis")))
-      knolId === 2
+    "insert a row" in new WithApplication() {
+      await(bookRepo.insert(Book("GEB", "Hoffstadter", 2016, "orestis"))) === 1
+      await(bookRepo.getAll).length === 2
     }
 
-    "insert multiple rows" in new  WithApplication()  {
+    "insert multiple rows" in new  WithApplication() {
       val result = bookRepo.insertAll(List(
-        Book("My third book", "Orestis Melkonian", 2016, "orestis"),
-        Book("My fourth book", "Orestis Melkonian", 2016, "orestis")
+        Book("Curry", "", 2016, "orestis"),
+        Book("Howard", "", 2016, "orestis")
       ))
-      val knolIds = await(result)
-      knolIds === Seq(2, 3)
+      await(result) === Some(2)
+      await(bookRepo.getAll).length === 3
     }
 
-    "update a row" in new  WithApplication()  {
-      val result = await(
-        bookRepo.update(Book("My first book ever", "Orestis Melkonian", 2016, "orestis", Some(1)))
-      )
-      result === 1
+    "update a row" in new  WithApplication() {
+      await(
+        bookRepo.update(Book("My first book ever", "Orestis Melkonian", 2016, "orestis"))
+      ) === 0
     }
 
-    "delete a row" in new  WithApplication()  {
-      val result = await(bookRepo.delete(1))
+    "delete a row" in new  WithApplication() {
+      val result = await(bookRepo.delete("The Rebel"))
       result === 1
     }
   }
