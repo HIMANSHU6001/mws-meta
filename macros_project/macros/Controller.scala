@@ -8,16 +8,21 @@ import scala.meta._
 class Controller(main: String, primName: String, primType: String) extends StaticAnnotation {
   inline def apply(defn: Any): Any = meta {
     defn match {
-      case Defn.Class(_, name, _, Ctor.Primary(_, _, paramss), template) =>
+      case Defn.Class(_, name, _, _, template) =>
         // Extract macro's arguments
         val (main, primName, primType) = this match {
           case q"new $_(${Lit(main: String)}, ${Lit(primName: String)}, ${Lit(primType: String)})" => (main, primName, primType)
-          case _                                                => ???
+          case _ => abort("@Controller was not given arguments.")
+        }
+        val userStat: Stat = template.stats.get.head
+        val infoName = userStat match {
+          case Defn.Def(_, defName, _, _, _, _) => defName
+          case _ => abort("@Controller does not annotate class with a single def for information fetching.")
         }
         val primary = Term.Param(Seq(), Term.Name(primName), Some(Type.Name(primType)), None)
         val primaryName: Term.Arg = Term.Name(primary.name.value)
 
-        val ret = q"""
+        val controller = q"""
            class $name @_root_.com.google.inject.Inject()
               (val repo: ${Type.Name(s"_root_.${Term.Name(s"${main.toLowerCase}s")}.${Term.Name(main)}.${main}Repository")},
                val database: _root_.accounts.model.AccountRepository,
@@ -91,29 +96,19 @@ class Controller(main: String, primName: String, primType: String) extends Stati
                logger.info("Searching for ===> " + request.body)
                _addUserToJson(request.body, loggedIn.name).validate[${Type.Name(main)}].fold(
                  error => Future.successful(BadRequest(JsError.toJson(error))),
-                 entity => info(entity).map { information =>
+                 entity => $infoName(entity, ws).map { information =>
                    Ok(successResponse(information, "Information has been fetched successfully"))
                  }
                )
-             }
-
-             def info(entity: Book): Future[JsValue] = {
-               import play.api.libs.json._
-               ws.url(s"https://www.googleapis.com/books/v1/volumes?q=intitle:$${entity.title}+inauthor:$${entity.author}&key=AIzaSyAP_-Rb-Hiw1C_fvOjzPBqLqttuJ-bspMA")
-                 .get().map { response =>
-                   val googleId: String = (response.json \\ "id").head.as[JsString].value
-                   JsString(s"https://books.google.fr/books?id=$$googleId&printsec=frontcover&redir_esc=y")
-                 }
              }
 
              def _addUserToJson(data: JsValue, userName: String): JsValue =
                data.as[JsObject] + ("accountId" -> Json.toJson(userName))
            }
          """
-
-
-        println(ret)
-        ret
+        val combinedStats: Seq[Stat] = controller.templ.stats.get ++ template.stats.get
+        val complete = controller.copy(templ = controller.templ.copy(stats = Some(combinedStats)))
+        complete
       case _ =>
         abort("@Controller must annotate a class.")
     }
