@@ -2,7 +2,8 @@ package repo
 
 
 import books.Book
-import books.model.{Book, BookRepository}
+import books.Book
+import books.Book.BookRepository
 import play.api.Application
 import play.api.test.{PlaySpecification, WithApplication}
 

@@ -5,15 +5,22 @@ import scala.collection.immutable.Seq
 import scala.meta._
 
 @compileTimeOnly("@Controller not expanded")
-class Controller(main: String, primName: String, primType: String) extends StaticAnnotation {
+class Controller extends StaticAnnotation {
   inline def apply(defn: Any): Any = meta {
     defn match {
       case Defn.Class(_, name, _, _, template) =>
-        // Extract macro's arguments
-        val (main, primName, primType) = this match {
-          case q"new $_(${Lit(main: String)}, ${Lit(primName: String)}, ${Lit(primType: String)})" => (main, primName, primType)
-          case _ => abort("@Controller was not given arguments.")
-        }
+
+        val main = name.value.replaceAll("Controller", "")
+
+        // Extract class mapping from state
+        val fields: Seq[(String, String)] =
+          Generators.readFromFile(s"./macros_project/macros/state/$main")
+            .next().split('$').map { ascribe =>
+              val v :: (t :: _) = ascribe.split(':').toList
+              v -> t
+            }.toList
+        val (primName, primType) = fields.head
+
         val userStat: Stat = template.stats.get.head
         val infoName = userStat match {
           case Defn.Def(_, defName, _, _, _, _) => defName
@@ -21,6 +28,20 @@ class Controller(main: String, primName: String, primType: String) extends Stati
         }
         val primary = Term.Param(Seq(), Term.Name(primName), Some(Type.Name(primType)), None)
         val primaryName: Term.Arg = Term.Name(primary.name.value)
+
+        // Enforce 2-step compilation
+        val indexBody: Term.Arg =
+          if (Generators.hasBeenGenerated(main)) {
+            println(s"@$main Second compilation phase. Expansion complete.")
+            arg"views.html.index(loggedIn)"
+          }
+          else {
+            Generators.generateAll(main, fields.toList)
+            println(s"@$main First compilation phase. Please re-compile for meta-dependencies.")
+            arg"""successResponse(Json.toJson(0), "Dummy index")"""
+          }
+
+
 
         val controller = q"""
            class $name @_root_.com.google.inject.Inject()
@@ -38,12 +59,11 @@ class Controller(main: String, primName: String, primType: String) extends Stati
              import play.api.libs.json._
              import _root_.utils.Constants.{successResponse, failResponse}
              import _root_.scala.concurrent.Future
-             import views.html
 
              val logger = _root_.play.api.Logger(this.getClass)
 
              def index = StackAction { implicit request =>
-              Ok(html.index(loggedIn))
+              Ok($indexBody)
              }
 
              def list() = AsyncStack { implicit request =>
@@ -108,6 +128,7 @@ class Controller(main: String, primName: String, primType: String) extends Stati
          """
         val combinedStats: Seq[Stat] = controller.templ.stats.get ++ template.stats.get
         val complete = controller.copy(templ = controller.templ.copy(stats = Some(combinedStats)))
+
         complete
       case _ =>
         abort("@Controller must annotate a class.")

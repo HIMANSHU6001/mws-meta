@@ -4,7 +4,7 @@
 @(title: String, fav: String = "favicon")(webJarAssets: WebJarAssets)(content: Html)
 
 <!DOCTYPE html>
-<html lang="en" ng-app="myApp">
+<html lang="en" ng-app="mainApp">
     <head>
         <title>@title</title>
 
@@ -20,7 +20,7 @@
     <body>
 
     <header>
-        <a href="@mainRoutes.Application.index()">
+        <a href="@mainRoutes.Application.mainIndex()">
             <span class="glyphicon glyphicon-menu-hamburger header-icon" aria-hidden="true"></span>
         </a>
         <h3 class="page-header" style="">@title</h3>
@@ -40,10 +40,10 @@
         <script type="text/javascript" src='@routes.WebJarAssets.at(webJarAssets.locate("ui-bootstrap-tpls.min.js"))'></script>
         <script type="text/javascript" src='@routes.WebJarAssets.at(webJarAssets.locate("angular-animate.min.js"))'></script>
 
-         <!-- #Custom Javascripts Links -->
-        <script type="text/javascript" src="@routes.Assets.at("javascripts/books.js")"></script>
+         <!-- Custom Javascripts Links -->
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/app.js")"></script>
         <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
         <script type="text/javascript" src="http://s.codepen.io/assets/libs/modernizr.js"></script>
-        
+
     </body>
 </html>

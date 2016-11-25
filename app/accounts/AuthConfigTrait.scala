@@ -41,7 +41,7 @@ trait AuthConfigTrait extends AuthConfig {
     * Where to redirect the user after a successful login.
     */
   def loginSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
-    val uri = request.session.get("access_uri").getOrElse(mainRoutes.Application.index().url.toString)
+    val uri = request.session.get("access_uri").getOrElse(mainRoutes.Application.mainIndex().url.toString)
     Future.successful(Redirect(uri).withSession(request.session - "access_uri"))
   }
 

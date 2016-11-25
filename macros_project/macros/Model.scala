@@ -108,11 +108,18 @@ class Model extends StaticAnnotation {
 
     defn match {
       case Defn.Class(_, name, _, Ctor.Primary(_, _, paramss), _) =>
-        val clazz: Defn.Class = accountify(name, paramss.head)
-        val json: Stat = jsonify(name)
-        val slick: Seq[Stat] = slickify(name.value, clazz.ctor.paramss.head)
-        val repo: Seq[Stat] = repify(name.value, clazz.ctor.paramss.head)
+        val main = name.value
 
+        // Add accountId
+        val clazz: Defn.Class = accountify(name, paramss.head)
+        // Add JSON implicit conversion
+        val json: Stat = jsonify(name)
+        // Add slick classes
+        val slick: Seq[Stat] = slickify(main, clazz.ctor.paramss.head)
+        // Add repository
+        val repo: Seq[Stat] = repify(main, clazz.ctor.paramss.head)
+
+        // Companion object
         val obj: Defn.Object =
           q"""
             object ${Term.Name(name.value)} {
@@ -120,6 +127,15 @@ class Model extends StaticAnnotation {
             }
            """
 
+        // Add class mapping in state
+        val fields = paramss.head
+            .map { p => (p.name.value, p.decltpe.get.syntax) }
+            .map { case (n, t) => s"$n:$t"}.mkString("$")
+
+        if (!Generators.hasBeenGenerated(main))
+          Generators.writeToFile(s"./macros_project/macros/state/$main", fields)
+
+        // Return class + companion
         Term.Block(
           Seq(clazz, obj)
         )
@@ -128,3 +144,4 @@ class Model extends StaticAnnotation {
     }
   }
 }
+

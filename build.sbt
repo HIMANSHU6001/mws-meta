@@ -51,7 +51,7 @@ lazy val metaMacroSettings: Seq[Def.Setting[_]] = Seq(
 // Define macros in this project.
 lazy val macros_project = project
 lazy val app = (project in file("."))
-  .enablePlugins(PlayScala, SbtWeb)
+  .enablePlugins(PlayScala)
   .settings(metaMacroSettings)
   .aggregate(macros_project)
   .dependsOn(macros_project)

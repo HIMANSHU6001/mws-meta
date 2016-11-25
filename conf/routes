@@ -3,16 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                      main.Application.index
-
-# Book-related routes
-GET     /books                 books.BookController.index
-GET     /book/list             books.BookController.list
-POST    /book/create           books.BookController.create
-GET     /book/edit             books.BookController.edit(title: String)
-POST    /book/update           books.BookController.update
-GET     /book/delete           books.BookController.delete(title: String)
-POST    /book/infoSearch       books.BookController.infoSearch
+GET     /                      main.Application.mainIndex
 
 # Authentication
 GET		/login				   accounts.Authentication.prepareLogin()
@@ -26,4 +17,3 @@ GET     /assets/*file          controllers.Assets.at(path="/public", file)
 
 # WebJars
 GET     /webjars/*file         controllers.WebJarAssets.at(file)
-

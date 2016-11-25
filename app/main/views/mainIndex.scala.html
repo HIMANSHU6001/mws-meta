@@ -1,0 +1,10 @@
+@import accounts.model.Account
+@import main.views.html._template
+
+@(account: Account)(implicit webJarAssets: WebJarAssets)
+
+@_template(s"${account.name}'s Collections")(webJarAssets) {
+
+    <ul id="link_list">
+    </ul>
+}

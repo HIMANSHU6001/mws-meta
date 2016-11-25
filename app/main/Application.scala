@@ -12,8 +12,8 @@ class Application @Inject()(val database: AccountRepository,
                             implicit val webJarAssets: WebJarAssets)
   extends Controller with AuthConfigTrait with AuthenticationElement {
 
-  def index = StackAction { implicit request =>
-    Ok(html.index(loggedIn))
+  def mainIndex = StackAction { implicit request =>
+    Ok(html.mainIndex(loggedIn))
   }
 
 }

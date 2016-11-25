@@ -28,7 +28,7 @@ class Authentication @Inject()(val database: AccountRepository,
 
   def prepareLogin() = StackAction { implicit request =>
     if (loggedIn.isDefined)
-      Redirect(mainRoutes.Application.index())
+      Redirect(mainRoutes.Application.mainIndex())
     else
       Ok(html.login(accountForm))
   }
