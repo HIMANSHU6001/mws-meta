@@ -28,12 +28,11 @@ object Generators {
     generateHTML()
   }
 
-
   def updateIndexHtml(): Unit = {
     val mainL = main.toLowerCase
     val filename = "./app/main/views/mainIndex.scala.html"
     val toDetect = """    <ul id="link_list">"""
-    val toInsert = s"""      ><a href="@${mainL}s.routes.${main}Controller.index()">$main</a>"""
+    val toInsert = s"""      <a href="@${mainL}s.routes.${main}Controller.index()">$main</a>"""
     changeLine(
       filename,
       toDetect,
@@ -104,6 +103,7 @@ object Generators {
          |GET     /${mainL}s               $controller.index
          |GET     /$mainL/list             $controller.list
          |POST    /$mainL/create           $controller.create
+         |POST    /$mainL/createMany       $controller.createMany
          |GET     /$mainL/edit             $controller.edit($primName: $primType)
          |POST    /$mainL/update           $controller.update
          |GET     /$mainL/delete           $controller.delete($primName: $primType)
@@ -159,6 +159,7 @@ object Generators {
          |    @html.list(account)
          |    @html.newForm(account)
          |    @html.editForm(account)
+         |    @html.upload()
          |
          |</div>
          |}
@@ -170,6 +171,7 @@ object Generators {
       s"./app/$plural/views/list.scala.html",
       s"""
          |@import accounts.model.Account
+         |
          |@(account: Account)
          |<table class="table table-hover">
          |    <thead>
@@ -202,15 +204,16 @@ object Generators {
 
     // New form
     val newFormFields = fieldsWithTypes.map { case (f, t) =>
+      val capitalized = f.capitalize
       s"""
          |<div class="form-group">
-         |  <label for="entity${f.capitalize}">${f.capitalize}</label>
+         |  <label for="entity$capitalized">$capitalized</label>
          |  <input type="${toFormType(t)}"
          |         class="form-control"
-         |         id="entity${f.capitalize}"
+         |         id="entity$capitalized"
          |         name="$f"
          |         ng-model="ctrl.newEntity.$f"
-         |         placeholder="${f.capitalize}"
+         |         placeholder="$capitalized"
          |         required>
          |</div>
        """.stripMargin.replace('\n', ' ')
@@ -220,6 +223,7 @@ object Generators {
       s"./app/$plural/views/newForm.scala.html",
       s"""
          |@import accounts.model.Account
+         |
          |@(account: Account)
          |<!-- $main Form Modal -->
          |<form id="new${main}Form" role="form" ng-submit="ctrl.addEntity()">
@@ -263,6 +267,7 @@ object Generators {
       s"./app/$plural/views/editForm.scala.html",
       s"""
          |@import accounts.model.Account
+         |
          |@(account: Account)
          |<!-- $main Edit Form Modal -->
          |<form name="edit${main}Form" ng-submit="ctrl.updateEntity()">
@@ -286,6 +291,22 @@ object Generators {
          |</form>
        """.stripMargin
     )
+
+    // CSV form
+    writeToFile(
+      s"./app/$plural/views/upload.scala.html",
+      s"""
+         |<ng-csv-import
+         |    content="ctrl.csv.content"
+         |    header="ctrl.csv.header"
+         |    separator="ctrl.csv.separator"
+         |    result="ctrl.csv.result"
+         |    upload-button-label="ctrl.csv.uploadButtonLabel"
+         |    callback="ctrl.csv.callback"
+         |></ng-csv-import>
+       """.stripMargin
+    )
+
   }
 
   def generateJS(): Unit = {
@@ -301,24 +322,20 @@ object Generators {
          |class $service
          |
          |  constructor: (@$$http, @$$q) ->
-         |    @taskList = {}
          |
          |  getAll: ->
          |    defer = @$$q.defer()
          |    @$$http.get('/$mainL/list')
          |    .success (res) =>
-         |      @taskList = res
          |      defer.resolve(res)
          |    .error (err, status) => defer.reject err
          |
          |    defer.promise
          |
-         |
          |  delete: ($primaryName) ->
          |    defer = @$$q.defer()
          |    @$$http.get "/$mainL/delete?$primaryName=#{ $primaryName }"
          |    .success (res) =>
-         |      @taskList = res
          |      defer.resolve res
          |    .error (err, status) => defer.reject err
          |
@@ -328,7 +345,6 @@ object Generators {
          |    defer = @$$q.defer()
          |    @$$http.post '/$mainL/update', data
          |    .success (res) =>
-         |      @taskList = res
          |      defer.resolve res
          |    .error (err, status) => defer.reject err
          |
@@ -338,23 +354,43 @@ object Generators {
          |    defer = @$$q.defer()
          |    @$$http.post '/$mainL/create', data
          |    .success (res) =>
-         |      @taskList = res
          |      defer.resolve res
          |    .error (err, status) => defer.reject err
          |
          |    defer.promise
+         |
+         |  addMany: (data) ->
+         |    defer = @$$q.defer()
+         |    @$$http.post '/$mainL/createMany', data
+         |    .success (res) =>
+         |      defer.resolve res
+         |    .error (err, status) => defer.reject err
+         |
+         |    defer.promise
+         |
          |
          |###
          |  Controller
          |###
          |class $ctrl
          |
-         |  constructor: (@$$scope, @$$http, @$$timeout, @$$uibModal, @$$window, @$service) ->
+         |  constructor: (@$$scope, @$$http, @$$timeout, @$$uibModal, @$$window, @$$parse, @$service) ->
+         |    @csv =
+         |      content: null
+         |      header: true
+         |      headerVisible: true
+         |      separator: ','
+         |      separatorVisible: true
+         |      result: null
+         |      encoding: 'ISO-8859-1'
+         |      uploadButtonLabel: "upload a csv file"
+         |      callback: @addEntities
          |    @entities = []
          |    @alerts = []
          |    @selectedEntity = {}
          |    @newEntity = {}
          |    @getAllEntities()
+         |
          |
          |  showAlertMessage: (status, message) ->
          |    switch status
@@ -396,6 +432,21 @@ object Generators {
          |    , (err) => @showAlertMessage "error", err
          |    )
          |
+         |  addEntities: (json) =>
+         |    objects = @csv.result
+         |    for obj, index in objects
+         |      for k, v of obj
+         |        if (+v)
+         |          obj[k] = +v
+         |          objects[index] = obj
+         |    result = JSON.stringify(objects);
+         |    @$service.addMany(result).then(
+         |      (res) =>
+         |        @getAllEntities()
+         |        @showAlertMessage res.status, res.msg
+         |    , (err) => @showAlertMessage "error", err
+         |    )
+         |
          |  deleteEntity: ($primaryName) ->
          |    @$service.delete($primaryName).then(
          |      (res) =>
@@ -412,13 +463,12 @@ object Generators {
          |    .success (res) => @$$window.open res.data, '_blank'
          |    .error (err, status) => @showAlertMessage "error", err
          |
-         |
          |###
          |  Module (main)
          |###
          |app = angular.module '$app', ['ui.bootstrap']
          |             .service '$service', ['$$http', '$$q', $service]
-         |             .controller '$ctrl', ['$$scope', '$$http', '$$timeout', '$$uibModal', '$$window', '$service', $ctrl]
+         |             .controller '$ctrl', ['$$scope', '$$http', '$$timeout', '$$uibModal', '$$window', '$$parse', '$service', $ctrl]
          |
          |
          """.stripMargin

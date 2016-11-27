@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "bootstrap" % "3.3.6" exclude("org.webjars", "jquery"),
   "org.webjars" % "angularjs" % "1.5.5" exclude("org.webjars", "jquery"),
   "org.webjars" % "angular-ui-bootstrap" % "1.3.2" exclude("org.webjars", "jquery"),
+  "org.webjars.bower" % "angular-csv-import" % "0.0.36" exclude("org.webjars", "jquery"),
   // Testing
   specs2 % Test,
   play.sbt.Play.autoImport.cache

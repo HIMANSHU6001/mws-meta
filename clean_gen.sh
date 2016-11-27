@@ -7,4 +7,4 @@ sed -n '1,/confirm/p;/\]/,$p' app/assets/javascripts/app.coffee > tmp && mv tmp 
 sed -n '1,/INSERT INTO \"account\" /p;/Downs/,$p' conf/evolutions/default/1.sql > tmp && mv tmp conf/evolutions/default/1.sql
 sed -n '1,/Downs/p;/DROP TABLE \"account\"/,$p' conf/evolutions/default/1.sql > tmp && mv tmp conf/evolutions/default/1.sql
 sed -n '1,/GET.*webjars.*/p;/%/,$p' conf/routes > tmp && mv tmp conf/routes
-find . -type d -name 'state' | xargs rm -rf
+find ./macros_project/macros/ -type d -name 'state' | xargs rm -rf

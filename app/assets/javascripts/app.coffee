@@ -1,5 +1,6 @@
 angular.module('mainApp',
   [
+    'ngCsvImport',
     'confirmDialogBoxModule',
   ]
 ).directive 'notification', ($timeout) ->

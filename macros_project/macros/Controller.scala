@@ -41,26 +41,24 @@ class Controller extends StaticAnnotation {
             arg"""successResponse(Json.toJson(0), "Dummy index")"""
           }
 
-
-
         val controller = q"""
-           class $name @_root_.com.google.inject.Inject()
-              (val repo: ${Type.Name(s"_root_.${Term.Name(s"${main.toLowerCase}s")}.${Term.Name(main)}.${main}Repository")},
-               val database: _root_.accounts.model.AccountRepository,
-               ws: _root_.play.api.libs.ws.WSClient,
-               implicit val webJarAssets: _root_.controllers.WebJarAssets)
-              extends _root_.play.api.mvc.Controller
-                with _root_.accounts.AuthConfigTrait
-                with _root_.jp.t2v.lab.play2.auth.AuthenticationElement {
+           class $name @com.google.inject.Inject()
+              (val repo: ${Type.Name(s"${Term.Name(s"${main.toLowerCase}s")}.${Term.Name(main)}.${main}Repository")},
+               val database: accounts.model.AccountRepository,
+               ws: play.api.libs.ws.WSClient,
+               implicit val webJarAssets: controllers.WebJarAssets)
+              extends play.api.mvc.Controller
+                with accounts.AuthConfigTrait
+                with jp.t2v.lab.play2.auth.AuthenticationElement {
 
              import play.api.libs.concurrent.Execution.Implicits.defaultContext
+             import play.api._
              import play.api.mvc._
-             import play.api.libs.json.Json._
              import play.api.libs.json._
-             import _root_.utils.Constants.{successResponse, failResponse}
-             import _root_.scala.concurrent.Future
+             import utils.Constants.{successResponse, failResponse}
+             import scala.concurrent.Future
 
-             val logger = _root_.play.api.Logger(this.getClass)
+             val logger = play.api.Logger(this.getClass)
 
              def index = StackAction { implicit request =>
               Ok($indexBody)
@@ -73,18 +71,31 @@ class Controller extends StaticAnnotation {
                }
              }
 
-             def create(): Action[JsValue] = AsyncStack(parse.json) { implicit request =>
+             def create() = AsyncStack(parse.json) { implicit request =>
                logger.info("Creating ===> " + request.body)
-               _addUserToJson(request.body, loggedIn.name).validate[${Type.Name(main)}].fold(
+               _addUserToJson(loggedIn.name)(request.body).validate[${Type.Name(main)}].fold(
                   error => Future.successful(BadRequest(JsError.toJson(error))),
                  { entity =>
                      repo.insert(entity).map { createdEntityId =>
-                       Ok(successResponse(Json.toJson(Map("id" ->createdEntityId)), ${Lit(main)} + " has been created successfully."))
+                       Ok(successResponse(Json.toJson(Map("id" ->createdEntityId)),
+                                          ${Lit(main)} + " has been created successfully."))
                      }
                  }
                )
              }
 
+             def createMany() = AsyncStack(parse.json) { implicit request =>
+               logger.info("Creating many ===> " + request.body)
+               _addUserToJsons(loggedIn.name)(request.body.as[JsArray]).validate[List[${Type.Name(main)}]].fold(
+                 error => Future.successful(BadRequest(JsError.toJson(error)))
+               , { entities =>
+                     repo.insertAll(entities).map { insertedNumber =>
+                       Ok(successResponse(Json.toJson(Map("inserted" -> insertedNumber)),
+                         s"$${insertedNumber.get} " + ${Lit(main)} + "(s) have been created successfully."))
+                     }
+                 }
+               )
+             }
 
              def delete($primary) = AsyncStack { request =>
                repo.delete($primaryName).map { _ =>
@@ -92,17 +103,16 @@ class Controller extends StaticAnnotation {
                }
              }
 
-
-             def edit($primary): Action[AnyContent] = AsyncStack { request =>
+             def edit($primary) = AsyncStack { request =>
                repo.getById($primaryName).map { entityOpt =>
                  entityOpt.fold(Ok(failResponse(Json.obj(), ${Lit(main)} + " does not exist.")))(entity => Ok(
                    successResponse(Json.toJson(entity), "Got " + ${Lit(main)} + " successfully")))
                }
              }
 
-             def update: Action[JsValue] = AsyncStack(parse.json) { implicit request =>
+             def update = AsyncStack(parse.json) { implicit request =>
                logger.info("Updating ===> " + request.body)
-               _addUserToJson(request.body, loggedIn.name).validate[${Type.Name(main)}].fold(
+               _addUserToJson(loggedIn.name)(request.body).validate[${Type.Name(main)}].fold(
                  error => Future.successful(BadRequest(JsError.toJson(error))),
                  { entity =>
                      repo.update(entity).map { res =>
@@ -112,9 +122,9 @@ class Controller extends StaticAnnotation {
                )
              }
 
-             def infoSearch: Action[JsValue] = AsyncStack(parse.json) { implicit request =>
+             def infoSearch = AsyncStack(parse.json) { implicit request =>
                logger.info("Searching for ===> " + request.body)
-               _addUserToJson(request.body, loggedIn.name).validate[${Type.Name(main)}].fold(
+               _addUserToJson(loggedIn.name)(request.body).validate[${Type.Name(main)}].fold(
                  error => Future.successful(BadRequest(JsError.toJson(error))),
                  entity => $infoName(entity, ws).map { information =>
                    Ok(successResponse(information, "Information has been fetched successfully"))
@@ -122,13 +132,15 @@ class Controller extends StaticAnnotation {
                )
              }
 
-             def _addUserToJson(data: JsValue, userName: String): JsValue =
+             def _addUserToJson(userName: String)(data: JsValue): JsValue =
                data.as[JsObject] + ("accountId" -> Json.toJson(userName))
+
+             def _addUserToJsons(username: String)(data: JsArray): JsArray =
+               JsArray(data.value.map(_addUserToJson(username)))
            }
          """
         val combinedStats: Seq[Stat] = controller.templ.stats.get ++ template.stats.get
         val complete = controller.copy(templ = controller.templ.copy(stats = Some(combinedStats)))
-
         complete
       case _ =>
         abort("@Controller must annotate a class.")

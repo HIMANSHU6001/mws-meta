@@ -40,7 +40,7 @@ class Model extends StaticAnnotation {
       fieldsDeclarations :+ projection
     }
 
-    def slickify(name: String, fields: Seq[Term.Param]): Seq[Stat] = {
+    def slickify(name: String, fields: Fields): Seq[Stat] = {
       val table: Type.Name = Type.Name(s"${name}Table")
       val lowercase = name.toLowerCase
       q"""
@@ -59,7 +59,7 @@ class Model extends StaticAnnotation {
        """.stats
     }
 
-    def repify(name: String, fields: Seq[Term.Param]): Seq[Stat] = {
+    def repify(name: String, fields: Fields): Seq[Stat] = {
       val table = Ctor.Ref.Name(s"${name}Table")
       val repo = Type.Name(s"${name}Repository")
       val entityType = Type.Name(name)
@@ -130,15 +130,13 @@ class Model extends StaticAnnotation {
         // Add class mapping in state
         val fields = paramss.head
             .map { p => (p.name.value, p.decltpe.get.syntax) }
-            .map { case (n, t) => s"$n:$t"}.mkString("$")
+            .map { case (n, t) => s"$n:$t" } mkString "$"
 
         if (!Generators.hasBeenGenerated(main))
           Generators.writeToFile(s"./macros_project/macros/state/$main", fields)
 
         // Return class + companion
-        Term.Block(
-          Seq(clazz, obj)
-        )
+        Term.Block(Seq(clazz, obj))
       case _ =>
         abort("@Model must annotate a class.")
     }
